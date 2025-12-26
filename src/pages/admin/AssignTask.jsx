@@ -280,7 +280,8 @@ useEffect(() => {
       return dayObj > targetDateObj;
     });
 
-    return nextWorkingDay || targetDateStr;
+    // Return null if no working day found (beyond calendar range)
+    return nextWorkingDay || null;
   };
 
   const findEndOfWeekDate = (date, weekNumber) => {
@@ -366,31 +367,37 @@ useEffect(() => {
         switch (formData.frequency) {
           case "daily":
             taskDate = findNextWorkingDay(currentDate);
+            if (!taskDate) break; // No more working days available
             currentDate = addDays(new Date(taskDate.split("/").reverse().join("-")), 1);
             break;
 
           case "weekly":
             taskDate = findNextWorkingDay(currentDate);
+            if (!taskDate) break; // No more working days available
             currentDate = addDays(new Date(taskDate.split("/").reverse().join("-")), 7);
             break;
 
           case "fortnightly":
             taskDate = findNextWorkingDay(currentDate);
+            if (!taskDate) break; // No more working days available
             currentDate = addDays(new Date(taskDate.split("/").reverse().join("-")), 14);
             break;
 
           case "monthly":
             taskDate = findNextWorkingDay(currentDate);
+            if (!taskDate) break; // No more working days available
             currentDate = addMonths(new Date(taskDate.split("/").reverse().join("-")), 1);
             break;
 
           case "quarterly":
             taskDate = findNextWorkingDay(currentDate);
+            if (!taskDate) break; // No more working days available
             currentDate = addMonths(new Date(taskDate.split("/").reverse().join("-")), 3);
             break;
 
           case "yearly":
             taskDate = findNextWorkingDay(currentDate);
+            if (!taskDate) break; // No more working days available
             currentDate = addYears(new Date(taskDate.split("/").reverse().join("-")), 1);
             break;
 
@@ -400,11 +407,13 @@ useEffect(() => {
           case "end-of-4th-week":
             const weekNum = parseInt(formData.frequency.split("-")[2]);
             taskDate = findEndOfWeekDate(currentDate, weekNum);
+            if (!taskDate) break; // No more working days available
             currentDate = addMonths(new Date(taskDate.split("/").reverse().join("-")), 1);
             break;
 
           case "end-of-last-week":
             taskDate = findEndOfWeekDate(currentDate, -1);
+            if (!taskDate) break; // No more working days available
             currentDate = addMonths(new Date(taskDate.split("/").reverse().join("-")), 1);
             break;
 
@@ -413,26 +422,29 @@ useEffect(() => {
             break;
         }
 
-        if (taskDate) {
-          const taskDateTimeStr = formatDateTimeForStorage(
-            new Date(taskDate.split("/").reverse().join("-")),
-            time
-          );
-
-          tasks.push({
-            description: formData.description,
-            department: formData.department,
-            givenBy: formData.givenBy,
-            doer: formData.doer,
-            dueDate: taskDateTimeStr,
-            status: "pending",
-            frequency: formData.frequency,
-            enableReminders: formData.enableReminders,
-            requireAttachment: formData.requireAttachment,
-          });
-
-          taskCount++;
+        // Stop generating tasks if no more working days are available
+        if (!taskDate) {
+          break;
         }
+
+        const taskDateTimeStr = formatDateTimeForStorage(
+          new Date(taskDate.split("/").reverse().join("-")),
+          time
+        );
+
+        tasks.push({
+          description: formData.description,
+          department: formData.department,
+          givenBy: formData.givenBy,
+          doer: formData.doer,
+          dueDate: taskDateTimeStr,
+          status: "pending",
+          frequency: formData.frequency,
+          enableReminders: formData.enableReminders,
+          requireAttachment: formData.requireAttachment,
+        });
+
+        taskCount++;
       }
     }
 

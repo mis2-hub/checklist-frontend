@@ -14,6 +14,8 @@ import "./index.css"
 import Demo from "./pages/user/Demo"
 import Setting from "./pages/Setting"
 import MisReport from "./pages/MisReport"
+import HistoryPage from "./pages/admin/HistoryPage"
+import TrainingVideoPage from "./pages/admin/TrainingVideoPage"
 import RealtimeLogoutListener from "./components/RealtimeLogoutListener"   // ✅ Added listener
 
 // Auth wrapper component to protect routes
@@ -111,6 +113,26 @@ function App() {
           element={
             <ProtectedRoute>
               <MisReport />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Training Video page route */}
+        <Route
+          path="/dashboard/training-video"
+          element={
+            <ProtectedRoute>
+              <TrainingVideoPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* History page route */}
+        <Route
+          path="/dashboard/history"
+          element={
+            <ProtectedRoute>
+              <HistoryPage />
             </ProtectedRoute>
           }
         />

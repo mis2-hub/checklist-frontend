@@ -19,6 +19,8 @@ import {
   BookmarkCheck,
   CrossIcon,
   X,
+  History,
+  Video,
 } from "lucide-react";
 
 export default function AdminLayout({ children, darkMode, toggleDarkMode }) {
@@ -89,7 +91,7 @@ export default function AdminLayout({ children, darkMode, toggleDarkMode }) {
       label: "Assign Task",
       icon: CheckSquare,
       active: location.pathname === "/dashboard/assign-task",
-      showFor: ["admin", "user"],
+      showFor: ["admin"],
     },
     {
       href: "/dashboard/delegation",
@@ -99,21 +101,27 @@ export default function AdminLayout({ children, darkMode, toggleDarkMode }) {
       showFor: ["admin", "user"],
     },
     {
-      href: "#",
-      label: "Data",
-      icon: Database,
-      active: location.pathname.includes("/dashboard/data"),
-      submenu: true,
+      href: "/dashboard/data/sales",
+      label: "Checklist",
+      icon: CalendarCheck,
+      active: location.pathname === "/dashboard/data/sales",
       showFor: ["admin", "user"],
     },
     {
-      href: "/dashboard/mis-report",
-      label: "MIS Report",
-      icon: CheckSquare,
-      active: location.pathname.includes("/dashboard/mis-report"),
-      // Only show for super admin (username = 'admin')
-      showFor: isSuperAdmin ? ["admin"] : [],
+      href: "/dashboard/history",
+      label: "Admin Approval",
+      icon: History,
+      active: location.pathname === "/dashboard/history",
+      showFor: ["admin", "user"],
     },
+    // {
+    //   href: "/dashboard/mis-report",
+    //   label: "MIS Report",
+    //   icon: CheckSquare,
+    //   active: location.pathname.includes("/dashboard/mis-report"),
+    //   // Only show for super admin (username = 'admin')
+    //   showFor: isSuperAdmin ? ["admin"] : [],
+    // },
     {
       href: "/dashboard/setting",
       label: "Settings",
@@ -121,6 +129,13 @@ export default function AdminLayout({ children, darkMode, toggleDarkMode }) {
       active: location.pathname.includes("/dashboard/setting"),
       // Only show for super admin (username = 'admin')
       showFor: isSuperAdmin ? ["admin"] : [],
+    },
+    {
+      href: "/dashboard/training-video",
+      label: "Training Video",
+      icon: Video,
+      active: location.pathname === "/dashboard/training-video",
+      showFor: ["admin", "user"],
     },
   ];
 
@@ -170,67 +185,19 @@ export default function AdminLayout({ children, darkMode, toggleDarkMode }) {
           <ul className="space-y-1">
             {accessibleRoutes.map((route) => (
               <li key={route.label}>
-                {route.submenu ? (
-                  <div>
-                    <button
-                      onClick={() => setIsDataSubmenuOpen(!isDataSubmenuOpen)}
-                      className={`flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${route.active
-                        ? "bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700"
-                        : "text-gray-700 hover:bg-blue-50"
-                        }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <route.icon
-                          className={`h-4 w-4 ${route.active ? "text-blue-600" : ""
-                            }`}
-                        />
-                        {route.label}
-                      </div>
-                      {isDataSubmenuOpen ? (
-                        <ChevronDown className="h-4 w-4" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4" />
-                      )}
-                    </button>
-                    {isDataSubmenuOpen && (
-                      <ul className="mt-1 ml-6 space-y-1 border-l border-blue-100 pl-2">
-                        {accessibleDepartments.map((category) => (
-                          <li key={category.id}>
-                            <Link
-                              to={
-                                category.link ||
-                                `/dashboard/data/${category.id}`
-                              }
-                              className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ${location.pathname ===
-                                (category.link ||
-                                  `/dashboard/data/${category.id}`)
-                                ? "bg-blue-50 text-blue-700 font-medium"
-                                : "text-gray-600 hover:bg-blue-50 hover:text-blue-700 "
-                                }`}
-                              onClick={() => setIsMobileMenuOpen(false)}
-                            >
-                              {category.name}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ) : (
-                  <Link
-                    to={route.href}
-                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${route.active
-                      ? "bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700"
-                      : "text-gray-700 hover:bg-blue-50"
+                <Link
+                  to={route.href}
+                  className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${route.active
+                    ? "bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700"
+                    : "text-gray-700 hover:bg-blue-50"
+                    }`}
+                >
+                  <route.icon
+                    className={`h-4 w-4 ${route.active ? "text-blue-600" : ""
                       }`}
-                  >
-                    <route.icon
-                      className={`h-4 w-4 ${route.active ? "text-blue-600" : ""
-                        }`}
-                    />
-                    {route.label}
-                  </Link>
-                )}
+                  />
+                  {route.label}
+                </Link>
               </li>
             ))}
           </ul>
@@ -349,70 +316,20 @@ export default function AdminLayout({ children, darkMode, toggleDarkMode }) {
               <ul className="space-y-1">
                 {accessibleRoutes.map((route) => (
                   <li key={route.label}>
-                    {route.submenu ? (
-                      <div>
-                        <button
-                          onClick={() =>
-                            setIsDataSubmenuOpen(!isDataSubmenuOpen)
-                          }
-                          className={`flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${route.active
-                            ? "bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700"
-                            : "text-gray-700 hover:bg-blue-50"
-                            }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <route.icon
-                              className={`h-4 w-4 ${route.active ? "text-blue-600" : ""
-                                }`}
-                            />
-                            {route.label}
-                          </div>
-                          {isDataSubmenuOpen ? (
-                            <ChevronDown className="h-4 w-4" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4" />
-                          )}
-                        </button>
-                        {isDataSubmenuOpen && (
-                          <ul className="mt-1 ml-6 space-y-1 border-l border-blue-100 pl-2">
-                            {accessibleDepartments.map((category) => (
-                              <li key={category.id}>
-                                <Link
-                                  to={
-                                    category.link ||
-                                    `/dashboard/data/${category.id}`
-                                  }
-                                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ${location.pathname ===
-                                    (category.link ||
-                                      `/dashboard/data/${category.id}`)
-                                    ? "bg-blue-50 text-blue-700 font-medium"
-                                    : "text-gray-600 hover:bg-blue-50 hover:text-blue-700"
-                                    }`}
-                                  onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                  {category.name}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    ) : (
-                      <Link
-                        to={route.href}
-                        className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${route.active
-                          ? "bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700"
-                          : "text-gray-700 hover:bg-blue-50"
+                    <Link
+                      to={route.href}
+                      className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${route.active
+                        ? "bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700"
+                        : "text-gray-700 hover:bg-blue-50"
+                        }`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <route.icon
+                        className={`h-4 w-4 ${route.active ? "text-blue-600" : ""
                           }`}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        <route.icon
-                          className={`h-4 w-4 ${route.active ? "text-blue-600" : ""
-                            }`}
-                        />
-                        {route.label}
-                      </Link>
-                    )}
+                      />
+                      {route.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
